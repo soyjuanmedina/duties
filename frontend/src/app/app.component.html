@@ -1,0 +1,106 @@
+<div class="jumbotron m-3">
+  <h1 class="display-4 text-center">My list of duties</h1>
+  <form [formGroup]="dutyForm" class="m-0">
+
+    <div>&nbsp;<small
+        *ngIf="dutyForm.invalid && (dutyForm.dirty || dutyForm.touched) && dutyForm.value.duty"
+        class="text-danger">Oh...
+        a duty is always a little longer!!
+      </small></div>
+
+    <div class="form-group">
+      <input type="text" formControlName="duty" class="form-control" id="duty"
+        placeholder="New dutty">
+    </div>
+
+    <p></p>
+    <input class="btn btn-primary" (click)=addDuty() type="submit" value="Add new"
+      [disabled]="!dutyForm.valid">
+  </form>
+</div>
+
+<div *ngIf="_dutiesService.loading" class="d-flex justify-content-center text-primary">
+  <div class="spinner-border" role="status">
+    <span class="sr-only">Loading...</span>
+  </div>
+</div>
+
+<div *ngIf="!_dutiesService.loading">
+
+  <div class="alert alert-success" role="alert" *ngIf="duties?.length < 1">
+    Great!! You have no pending duties
+  </div>
+
+  <div *ngIf="duties?.length >= 1">
+    <h4>Your pending duties</h4>
+    <div class="card sm-12 mt-2 bg-primary text-white" *ngFor="let duty of duties">
+      <div class="card-header">
+        <div class="row">
+          <div class="col-7">
+            {{duty.name}}
+          </div>
+          <div class="col-3 text-left tex-element-bold">
+          </div>
+          <div class="col-2 text-right">
+            <div ngbDropdown class="d-inline-block">
+              <i class="fas fa-pencil-alt cursor-hand" aria-hidden="true" data-toggle="modal"
+                data-target="#editDutyModal" [title]="'EDIT'" (click)="selectDuty(duty)"></i>
+              |
+              <i class="fas fa-trash-alt cursor-hand" aria-hidden="true" [title]="'DELETE'"
+                data-toggle="modal" data-target="#deleteDutyModal" (click)="selectDuty(duty)"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+<!-- Delete Duty Modal  -->
+<div class="modal fade" id="deleteDutyModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Delete pending duty</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>Do you really want to delete this duty?</p>
+        <small>{{ selectedDuty?.name }}</small>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+        <button type="button" class="btn btn-danger" (click)="deleteDuty()">Yes</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Edit Duty Modal  -->
+<div class="modal fade" id="editDutyModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Edit pending duty</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <input class="form-control" required type="text" name="name" [ngModel]="selectedDuty?.name"
+          (ngModelChange)="selectedDuty.name = $event">
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal"
+          (click)="cancelEdit()">Cancel</button>
+        <button type="button" class="btn btn-danger" (click)="editDuty()">Edit</button>
+      </div>
+    </div>
+  </div>
+</div>
